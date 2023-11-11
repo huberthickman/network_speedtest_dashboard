@@ -68,7 +68,10 @@ server <- function(input, output) {
     geom_line(aes(y=converted_upload), color="orange") + 
     scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d %H") +
     ylim(0, 1200) + 
-    labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds")
+    labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds") +
+    geom_point(aes( x=test_date_cst, y=converted_download), color='steelblue') + 
+    geom_point(aes( x=test_date_cst, y=converted_upload), color='orange')
+  
   p <- plotly_build(gg)
   output$ts_plot <- renderPlotly(p)
 }

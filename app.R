@@ -63,10 +63,16 @@ server <- function(input, output) {
   output$ts_plot <- renderPlot({
 
     ggplot(speed_df, 
-           aes(x = test_date_cst, y= converted_download)) + geom_line() + 
-      ylim(0, 1200) + labs(y="Download Mpbs",x="Test Date/Time") +
-      scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d %H")
+           aes(x = test_date_cst))  + 
+          geom_line(aes(y=converted_download), color="steelblue") + 
+         geom_line(aes(y=converted_upload), color="orange") + 
+      
+      scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d %H") +
+      ylim(0, 1200) + 
+      labs(y="Mpbs",x="Test Date/Time", title = "Download and upload speeds")
     
+      
+
   })
 }
 

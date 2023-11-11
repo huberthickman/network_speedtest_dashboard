@@ -52,6 +52,13 @@ server <- function(input, output) {
   
   download_df <- speed_df[, c("test_date_cst", "converted_download")]
   download_df$type <- "Download"
+  colnames(download_df) <- c("test_date_cst", "speed", "type")
+  
+  upload_df <- speed_df[, c("test_date_cst", "converted_upload")]
+  upload_df$type <- "Upload"
+  colnames(upload_df) <- c("test_date_cst", "speed", "type")
+  
+  plot_df <- union(download_df, upload_df)
   
   output$speed_dt <- DT::renderDT({datatable(
     display_df,
@@ -60,16 +67,15 @@ server <- function(input, output) {
     escape = FALSE
   )  %>% formatDate(c(1), "toLocaleString")}, 
   server = TRUE)
-  
-  gg <- ggplot(speed_df, 
-               aes(x = test_date_cst))  + 
-    geom_line(aes(y=converted_download), color="steelblue") + 
-    geom_line(aes(y=converted_upload), color="orange") + 
-    scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d\n %H%M") +
-    ylim(0, 1200) + 
-    labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds") +
-    geom_point(aes( x=test_date_cst, y=converted_download), color='steelblue') + 
-    geom_point(aes( x=test_date_cst, y=converted_upload), color='orange')
+
+  gg <- ggplot(plot_df,
+                aes(x = test_date_cst, y=speed, group=type , color=type))  +
+     geom_line() +
+     geom_point() +
+     scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d\n %H%M") +
+     ylim(0, 1200) +
+     labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds") 
+
   
   p <- plotly_build(gg)
   output$ts_plot <- renderPlotly(p)

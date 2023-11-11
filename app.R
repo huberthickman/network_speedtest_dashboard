@@ -21,7 +21,16 @@ ui <- fluidPage(
     tabsetPanel(id = "speed_notebooktabs",
                 type = "tabs",
                 tabPanel("Speed Plot", 
-                  plotlyOutput("ts_plot")
+                  plotlyOutput("ts_plot"),
+                  hr(),
+                  fluidRow(
+                    column(6, offset = 1, {
+                    textOutput("min_download_text", inline=TRUE)
+                    }),
+                    column(5, offset = 0, {
+                      textOutput("min_upload_text", inline=TRUE)
+                    })
+                  )
                 ),
                 tabPanel("Data", 
                   DT::dataTableOutput("speed_dt")
@@ -42,6 +51,9 @@ server <- function(input, output, session) {
                 cacheOK = TRUE)
   # TODO: write to tmp file so it will work on shinyapps
   # TODO: move to reactives with an update button
+  # TODO: download data button
+ 
+  
 
   speed_df_unsorted <- read.csv("sp.csv")
   
@@ -54,7 +66,13 @@ server <- function(input, output, session) {
   
   speed_df$converted_download <- round(speed_df$download/125000, 0)
   speed_df$converted_upload <- round(speed_df$upload/125000,0)
-  print(speed_df)
+  min_download <- min(speed_df$converted_download,  na.rm=T)
+  min_upload <- min(speed_df$converted_upload, na.rm=T)
+  
+  output$min_download_text <- renderText( {paste("Minimum logged download speed:", min_download, 'Mbps')}) 
+  output$min_upload_text <- renderText( {paste("Minimum logged upload speed:", min_upload, 'Mbps')}) 
+  
+  #print(speed_df)
   
   display_df <- speed_df[, c("test_date_cst", "server.name", "converted_download", "converted_upload", "share.url")]
   display_df$result_url <- paste('<a href=', display_df$share.url, ' target=\"_blank\">',  display_df$share.url, '</a>'

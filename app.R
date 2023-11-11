@@ -1,6 +1,6 @@
 #
 # This is a shiny app to display 
-# the results of hours speed tests on the Cox network.
+# the results of speed tests on the Cox network.
 #
 
 library(shiny)
@@ -11,6 +11,7 @@ library(dplyr)
 library(ggplot2)
 library(plotly)
 library(shinytitle)
+
 
 ui <- fluidPage(
     title = "Network Speed Tests",
@@ -31,13 +32,26 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
-  speed_df <- read.csv("/Users/hubert/bin/speedtest_results.csv")
+  #
+  #the fileshare name is in the config default profile
+  #
+  config <- config::get()
+  
+  download.file(config$fileshare, 
+                "sp.csv", quiet = TRUE, mode = "w",
+                cacheOK = TRUE)
+  # TODO: write to tmp file so it will work on shinyapps
+  # TODO: move to reactives with an update button
 
-  speed_df$test_date_cst <- with_tz(
-    as.POSIXct(speed_df$date, 
+  speed_df_unsorted <- read.csv("sp.csv")
+  
+  speed_df_unsorted$test_date_cst <- with_tz(
+    as.POSIXct(speed_df_unsorted$date, 
                format = "%Y-%m-%dT%H:%M:%S%z",
                tz = "US/Central")
   )
+  speed_df <- speed_df_unsorted[order(speed_df_unsorted$test_date_cst, decreasing = TRUE), ]
+  
   speed_df$converted_download <- round(speed_df$download/125000, 0)
   speed_df$converted_upload <- round(speed_df$upload/125000,0)
   print(speed_df)
@@ -76,7 +90,6 @@ server <- function(input, output, session) {
                 aes(x = test_date_cst, y=speed, group=type , color=type))  +
      geom_line() +
      geom_point() +
-     #scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d\n %H%M") +
      ylim(0, 1200) +
      labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds") 
 

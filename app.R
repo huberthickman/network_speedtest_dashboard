@@ -10,9 +10,11 @@ library(lubridate)
 library(dplyr)
 library(ggplot2)
 library(plotly)
+library(shinytitle)
 
 ui <- fluidPage(
-
+    title = "Network Speed Tests",
+    use_shiny_title(),
     titlePanel(h3("Network Speed Tests", align="center")),
 
     tabsetPanel(id = "speed_notebooktabs",

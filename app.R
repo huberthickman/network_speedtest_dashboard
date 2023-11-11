@@ -27,8 +27,8 @@ ui <- fluidPage(
     
 )
 
-server <- function(input, output) {
-
+server <- function(input, output, session) {
+  
   speed_df <- read.csv("/Users/hubert/bin/speedtest_results.csv")
 
   #speed_df$test_date_gmt <- as_datetime(speed_df$date, 
@@ -68,13 +68,15 @@ server <- function(input, output) {
                 aes(x = test_date_cst, y=speed, group=type , color=type))  +
      geom_line() +
      geom_point() +
-     scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d\n %H%M") +
+     #scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d\n %H%M") +
      ylim(0, 1200) +
      labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds") 
 
   
   p <- plotly_build(gg)
   output$ts_plot <- renderPlotly(p)
+  
+
 }
 
 # Run the application 

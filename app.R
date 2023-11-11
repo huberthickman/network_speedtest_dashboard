@@ -31,10 +31,6 @@ server <- function(input, output, session) {
   
   speed_df <- read.csv("/Users/hubert/bin/speedtest_results.csv")
 
-  #speed_df$test_date_gmt <- as_datetime(speed_df$date, 
-  #                                  format = "%Y-%m-%dT%H:%M:%S%z",
-  #                                  tz= "US/Central")
-
   speed_df$test_date_cst <- with_tz(
     as.POSIXct(speed_df$date, 
                format = "%Y-%m-%dT%H:%M:%S%z",
@@ -44,8 +40,9 @@ server <- function(input, output, session) {
   speed_df$converted_upload <- round(speed_df$upload/125000,0)
   print(speed_df)
   
-  display_df <- speed_df[, c("test_date_cst", "server.name", "converted_download", "converted_upload")]
-  
+  display_df <- speed_df[, c("test_date_cst", "server.name", "converted_download", "converted_upload", "share.url")]
+  display_df$result_url <- paste('<a href=', display_df$share.url, ' target=\"_blank\">',  display_df$share.url, '</a>'
+                                 , sep='')
   download_df <- speed_df[, c("test_date_cst", "converted_download")]
   download_df$type <- "Download"
   colnames(download_df) <- c("test_date_cst", "speed", "type")
@@ -59,8 +56,17 @@ server <- function(input, output, session) {
   output$speed_dt <- DT::renderDT({datatable(
     display_df,
     rownames = FALSE,
-    colnames = c("Test Date/Time (CST)", "Server", "Download Speed", "Upload Speed"),
-    escape = FALSE
+    colnames = c("Test Date/Time (CST)", "Server", "Download Speed", "Upload Speed", "Raw Url", "Results URL"),
+    escape = FALSE,
+    options = list(
+    columnDefs = list(
+      # Initially hidden columns
+      list(
+        visible = FALSE,
+        targets = c(4)
+        
+      ) )
+    )
   )  %>% formatDate(c(1), "toLocaleString")}, 
   server = TRUE)
 

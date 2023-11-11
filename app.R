@@ -113,17 +113,18 @@ server <- function(input, output, session) {
      geom_line() +
      geom_point() +
      ylim(0, 1200) +
-     labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds") 
+     labs(y="Mpbs",x="Test Date/Time", title='Upload and Download Speeds') 
+    
 
   
-  p <- plotly_build(gg)
+  p <- plotly_build(gg) 
   output$ts_plot <- renderPlotly(p)
   
   output$download_button <- shiny::downloadHandler(
     filename = paste0("speed_test_data-", Sys.Date(), ".csv"),
     content = function(file_path) 
     {
-      write.csv(display_df, file_path, row.names=FALSE)
+      write.csv(display_df[-c(6)], file_path, row.names=FALSE)
     }
   )
 }

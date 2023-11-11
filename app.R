@@ -7,6 +7,7 @@ library(shiny)
 library(DT)
 library(parsedate)
 library(lubridate)
+library(dplyr)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -31,27 +32,27 @@ server <- function(input, output) {
 
   speed_df <- read.csv("/Users/hubert/bin/speedtest_results.csv")
 
-  speed_df$test_date_gmt <- as_datetime(speed_df$date, 
-                                    format = "%Y-%m-%dT%H:%M:%S%z",
-                                    tz= "US/Central")
-  speed_df$test_date_cst <- with_tz(speed_df$test_date_gmt, 
-                                    "US/Central")
-  #speed_df$test_date_3 <- with_tz(
-  #  as.POSIXct(speed_df$date, 
-  #             format = "%Y-%m-%dT%H:%M:%S%z",
-  #             tz = "US/Central")
-  #)
+  #speed_df$test_date_gmt <- as_datetime(speed_df$date, 
+  #                                  format = "%Y-%m-%dT%H:%M:%S%z",
+  #                                  tz= "US/Central")
+
+  speed_df$test_date_cst <- with_tz(
+    as.POSIXct(speed_df$date, 
+               format = "%Y-%m-%dT%H:%M:%S%z",
+               tz = "US/Central")
+  )
+  speed_df$converted_download <- speed_df$download/125000
+  speed_df$converted_upload <- speed_df$upload/125000
   print(speed_df)
-  speed_dt <-
-    datatable(
-      speed_df,
-      #selection = list(mode = "single", target = "row", selected = previousSelection),
-      
-      rownames = TRUE,
-      escape = FALSE
-    ) #%>% formatDate()
   
-  output$speed_dt = DT::renderDT(speed_dt, server = FALSE)
+  display_df <- speed_df[, c("test_date_cst", "server.name", "converted_download", "converted_upload")]
+  
+  output$speed_dt <- DT::renderDT({datatable(
+    display_df,
+    rownames = FALSE,
+    escape = FALSE
+  )  %>% formatDate(c(1), "toLocaleString")}, 
+  server = TRUE)
 }
 
 # Run the application 

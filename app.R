@@ -30,10 +30,18 @@ ui <- fluidPage(
 server <- function(input, output) {
 
   speed_df <- read.csv("/Users/hubert/bin/speedtest_results.csv")
+
+  speed_df$test_date_gmt <- as_datetime(speed_df$date, 
+                                    format = "%Y-%m-%dT%H:%M:%S%z",
+                                    tz= "US/Central")
+  speed_df$test_date_cst <- with_tz(speed_df$test_date_gmt, 
+                                    "US/Central")
+  #speed_df$test_date_3 <- with_tz(
+  #  as.POSIXct(speed_df$date, 
+  #             format = "%Y-%m-%dT%H:%M:%S%z",
+  #             tz = "US/Central")
+  #)
   print(speed_df)
-  speed_df$test_date <- as_datetime(speed_df$date, 
-                                    format = "%Y-%m-%dT%H:%M:%S%z")
-  
   speed_dt <-
     datatable(
       speed_df,
@@ -41,7 +49,7 @@ server <- function(input, output) {
       
       rownames = TRUE,
       escape = FALSE
-    )
+    ) #%>% formatDate()
   
   output$speed_dt = DT::renderDT(speed_dt, server = FALSE)
 }

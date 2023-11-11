@@ -33,7 +33,11 @@ ui <- fluidPage(
                   )
                 ),
                 tabPanel("Data", 
-                  DT::dataTableOutput("speed_dt")
+                  DT::dataTableOutput("speed_dt"),
+                  shiny::downloadButton(
+                    outputId = "download_button", 
+                    label = "Download Speed Data"
+                  )
                 )
     )
     
@@ -51,7 +55,7 @@ server <- function(input, output, session) {
                 cacheOK = TRUE)
   # TODO: write to tmp file so it will work on shinyapps
   # TODO: move to reactives with an update button
-  # TODO: download data button
+  # TODO: download data button skip <a> URL columns
  
   
 
@@ -115,7 +119,13 @@ server <- function(input, output, session) {
   p <- plotly_build(gg)
   output$ts_plot <- renderPlotly(p)
   
-
+  output$download_button <- shiny::downloadHandler(
+    filename = paste0("speed_test_data-", Sys.Date(), ".csv"),
+    content = function(file_path) 
+    {
+      write.csv(display_df, file_path, row.names=FALSE)
+    }
+  )
 }
 
 # Run the application 

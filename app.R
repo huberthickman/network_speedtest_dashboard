@@ -10,12 +10,9 @@ library(lubridate)
 library(dplyr)
 library(ggplot2)
 library(plotly)
-#ggplotly()
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
 
-    # Application title
     titlePanel(h3("Network Speed Tests", align="center")),
 
     tabsetPanel(id = "speed_notebooktabs",
@@ -30,7 +27,6 @@ ui <- fluidPage(
     
 )
 
-# Define server logic required to draw a histogram
 server <- function(input, output) {
 
   speed_df <- read.csv("/Users/hubert/bin/speedtest_results.csv")

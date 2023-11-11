@@ -9,6 +9,8 @@ library(parsedate)
 library(lubridate)
 library(dplyr)
 library(ggplot2)
+library(plotly)
+#ggplotly()
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -20,7 +22,7 @@ ui <- fluidPage(
     fluidRow(
       column(
         width = 12,
-        plotOutput("ts_plot")
+        plotlyOutput("ts_plot")
       )
     ),
     fluidRow(
@@ -60,20 +62,15 @@ server <- function(input, output) {
   )  %>% formatDate(c(1), "toLocaleString")}, 
   server = TRUE)
   
-  output$ts_plot <- renderPlot({
-
-    ggplot(speed_df, 
-           aes(x = test_date_cst))  + 
-          geom_line(aes(y=converted_download), color="steelblue") + 
-         geom_line(aes(y=converted_upload), color="orange") + 
-      
-      scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d %H") +
-      ylim(0, 1200) + 
-      labs(y="Mpbs",x="Test Date/Time", title = "Download and upload speeds")
-    
-      
-
-  })
+  gg <- ggplot(speed_df, 
+               aes(x = test_date_cst))  + 
+    geom_line(aes(y=converted_download), color="steelblue") + 
+    geom_line(aes(y=converted_upload), color="orange") + 
+    scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d %H") +
+    ylim(0, 1200) + 
+    labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds")
+  p <- plotly_build(gg)
+  output$ts_plot <- renderPlotly(p)
 }
 
 # Run the application 

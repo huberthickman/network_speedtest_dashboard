@@ -8,6 +8,7 @@ library(DT)
 library(parsedate)
 library(lubridate)
 library(dplyr)
+library(ggplot2)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -16,7 +17,12 @@ ui <- fluidPage(
     titlePanel("Network Speed Tests"),
 
     # Sidebar with a slider input for number of bins 
-    
+    fluidRow(
+      column(
+        width = 12,
+        plotOutput("ts_plot")
+      )
+    ),
     fluidRow(
       column(
         width = 12,
@@ -41,8 +47,8 @@ server <- function(input, output) {
                format = "%Y-%m-%dT%H:%M:%S%z",
                tz = "US/Central")
   )
-  speed_df$converted_download <- speed_df$download/125000
-  speed_df$converted_upload <- speed_df$upload/125000
+  speed_df$converted_download <- round(speed_df$download/125000, 0)
+  speed_df$converted_upload <- round(speed_df$upload/125000,0)
   print(speed_df)
   
   display_df <- speed_df[, c("test_date_cst", "server.name", "converted_download", "converted_upload")]
@@ -53,6 +59,15 @@ server <- function(input, output) {
     escape = FALSE
   )  %>% formatDate(c(1), "toLocaleString")}, 
   server = TRUE)
+  
+  output$ts_plot <- renderPlot({
+
+    ggplot(speed_df, 
+           aes(x = test_date_cst, y= converted_download)) + geom_line() + 
+      ylim(0, 1200) + labs(y="Download Mpbs",x="Test Date/Time") +
+      scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d %H")
+    
+  })
 }
 
 # Run the application 

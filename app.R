@@ -16,23 +16,18 @@ library(plotly)
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Network Speed Tests"),
+    titlePanel(h3("Network Speed Tests", align="center")),
 
-    # Sidebar with a slider input for number of bins 
-    fluidRow(
-      column(
-        width = 12,
-        plotlyOutput("ts_plot")
-      )
-    ),
-    fluidRow(
-      column(
-        width = 12,
-        offset = 0,
-        style = 'padding:10px;',
-        DT::dataTableOutput("speed_dt")
-      )
+    tabsetPanel(id = "speed_notebooktabs",
+                type = "tabs",
+                tabPanel("Speed Plot", 
+                  plotlyOutput("ts_plot")
+                ),
+                tabPanel("Data", 
+                  DT::dataTableOutput("speed_dt")
+                )
     )
+    
 )
 
 # Define server logic required to draw a histogram
@@ -55,9 +50,13 @@ server <- function(input, output) {
   
   display_df <- speed_df[, c("test_date_cst", "server.name", "converted_download", "converted_upload")]
   
+  download_df <- speed_df[, c("test_date_cst", "converted_download")]
+  download_df$type <- "Download"
+  
   output$speed_dt <- DT::renderDT({datatable(
     display_df,
     rownames = FALSE,
+    colnames = c("Test Date/Time (CST)", "Server", "Download Speed", "Upload Speed"),
     escape = FALSE
   )  %>% formatDate(c(1), "toLocaleString")}, 
   server = TRUE)
@@ -66,7 +65,7 @@ server <- function(input, output) {
                aes(x = test_date_cst))  + 
     geom_line(aes(y=converted_download), color="steelblue") + 
     geom_line(aes(y=converted_upload), color="orange") + 
-    scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d %H") +
+    scale_x_datetime(date_breaks = "2 hours", date_labels = "%m/%d\n %H%M") +
     ylim(0, 1200) + 
     labs(y="Mpbs",x="Test Date/Time", title = "Download and Upload Speeds") +
     geom_point(aes( x=test_date_cst, y=converted_download), color='steelblue') + 

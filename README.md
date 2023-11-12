@@ -4,7 +4,7 @@ This is R/Shiny applicaton that takes the output generated from Ookla's command 
 
 There is a [sample bash script](utils/speedtest_job.sh) in the utils folder that will create a row in a csv file. You can run this script from cron at your desired frequency. I run this hourly with a few on the half hour at known peak times of performance degradation. This can't really be run on a continuous basis; hence you may miss some of the peaks and valleys of performance.
 
-Note that you must run this first with by hand with --output-header set and then add the header for the date column by hand in the created file.
+Note that you must run the speedtest command once by hand with --output-header set and then add the header for the date column by hand in that created file.
 
 After run this from cron at the desired frequency.
 

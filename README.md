@@ -10,7 +10,8 @@ After run this from cron at the desired frequency.
 
 The Shiny app expects the file location to be a shared file (I use Dropbox). It will download that into a temp file. I have the app deployed on [shinyapps.io](https://shinyapps.io).
 
-There are two simple pages: \* Speed plot - showing the plot. You can hover over the datapoints to get their values/date. The min upload and download speed are also noted.
+There are two simple pages: 
+* Speed plot - showing the plot. You can hover over the datapoints to get their values/date. The min upload and download speed are also noted.
 
 ![Screenshot of speed plot](docs/graph_page.png)
 

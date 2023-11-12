@@ -23,6 +23,8 @@ ui <- fluidPage(
                 tabPanel("Speed Plot", 
                   plotlyOutput("ts_plot"),
                   hr(),
+                  h6("All test results were obtained directly connected to the Panoramic modem via ethernet."),
+                  br(),
                   fluidRow(
                     column(6, offset = 1, {
                     textOutput("min_download_text", inline=TRUE)
@@ -51,14 +53,15 @@ server <- function(input, output, session) {
   config <- config::get()
   
   tf <- tempfile(pattern="speedtestcsvdata", tmpdir= tempdir(), fileext = ".csv")
+  # print(tf)
   download.file(config$fileshare, 
                 tf, quiet = TRUE, mode = "w",
-                cacheOK = TRUE)
+                cacheOK = FALSE)
   # TODO: move to reactives with an update button
 
   
 
-  speed_df_unsorted <- read.csv("sp.csv")
+  speed_df_unsorted <- read.csv(tf)
   
   speed_df_unsorted$test_date_cst <- with_tz(
     as.POSIXct(speed_df_unsorted$date, 

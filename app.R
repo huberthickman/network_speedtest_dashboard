@@ -50,13 +50,12 @@ server <- function(input, output, session) {
   #
   config <- config::get()
   
+  tf <- tempfile(pattern="speedtestcsvdata", tmpdir= tempdir(), fileext = ".csv")
   download.file(config$fileshare, 
-                "sp.csv", quiet = TRUE, mode = "w",
+                tf, quiet = TRUE, mode = "w",
                 cacheOK = TRUE)
-  # TODO: write to tmp file so it will work on shinyapps
   # TODO: move to reactives with an update button
-  # TODO: download data button skip <a> URL columns
- 
+
   
 
   speed_df_unsorted <- read.csv("sp.csv")

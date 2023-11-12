@@ -1,6 +1,6 @@
 # Network Speed Test Result app
 
-This is R/Shiny applicaton that takes the output generated from Ookla's command line speedtest <https://www.speedtest.net/apps/cli> and displays both upload and download speeds over time. I have been having network issues of late from my ISP and this little app allows me to look and see upload and download speeds at a glance.
+This is a R/Shiny applicaton that takes the output generated from Ookla's command line speedtest <https://www.speedtest.net/apps/cli> and displays both upload and download speeds over time. I have been having network issues of late from my ISP and this little app allows me to look and see upload and download speeds at a glance.
 
 There is a [sample bash script](utils/speedtest_job.sh) in the utils folder that will create a row in a csv file. You can run this script from cron at your desired frequency. I run this hourly with a few on the half hour at known peak times of performance degradation. This can't really be run on a continuous basis; hence you may miss some of the peaks and valleys of performance.
 

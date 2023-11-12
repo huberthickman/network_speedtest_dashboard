@@ -51,6 +51,12 @@ server <- function(input, output, session) {
   #the fileshare name is in the config default profile
   #
   config <- config::get()
+  print(Sys.getenv())
+  
+  #Force to Central Time, other users should change to the local time zone for
+  #deployment to shinyapps.io.
+  
+  Sys.setenv(TZ="US/Central")
   
   tf <- tempfile(pattern="speedtestcsvdata", tmpdir= tempdir(), fileext = ".csv")
   # print(tf)

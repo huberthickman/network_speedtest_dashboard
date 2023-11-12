@@ -51,12 +51,13 @@ server <- function(input, output, session) {
   #the fileshare name is in the config default profile
   #
   config <- config::get()
-  print(Sys.getenv())
+  #print(Sys.getenv())
   
   #Force to Central Time, other users should change to the local time zone for
   #deployment to shinyapps.io.
   
   Sys.setenv(TZ="US/Central")
+  print(paste("Speedtest initializing at " , as.POSIXlt(Sys.time())))
   
   tf <- tempfile(pattern="speedtestcsvdata", tmpdir= tempdir(), fileext = ".csv")
   # print(tf)
@@ -126,6 +127,7 @@ server <- function(input, output, session) {
 
   
   p <- plotly_build(gg) 
+  
   output$ts_plot <- renderPlotly(p)
   
   output$download_button <- shiny::downloadHandler(

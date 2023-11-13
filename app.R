@@ -21,6 +21,7 @@ ui <- fluidPage(
     tabsetPanel(id = "speed_notebooktabs",
                 type = "tabs",
                 tabPanel("Speed Plot", 
+                  br(),       
                   plotlyOutput("ts_plot"),
                   hr(),
                   h6("All test results were obtained directly connected to the Panoramic modem via ethernet."),
@@ -116,17 +117,45 @@ server <- function(input, output, session) {
     )
   )  %>% formatDate(c(1), "toLocaleString")}, 
   server = TRUE)
-
-  gg <- ggplot(plot_df,
-                aes(x = test_date_cst, y=speed, group=type , color=type))  +
-     geom_line() +
-     geom_point() +
-     ylim(0, 1200) +
-     labs(y="Mpbs",x="Test Date/Time", title='Upload and Download Speeds') 
-    
-
   
-  p <- plotly_build(gg) 
+  p <- plot_ly(speed_df, x = speed_df$test_date_cst, mode = 'lines')
+  p <- p %>% add_trace(y=speed_df$converted_download, name = "Download", mode = 'lines+markers', type='scatter')
+  p <- p %>% add_trace(y=speed_df$converted_upload, name = "Upload", mode = 'lines+markers', type='scatter')
+  p <- p %>% layout(title = "Upload and Download Speeds",
+                        xaxis = list(title = "Test Date/Time",
+                                     rangeslider = list(type= "date"),
+                                     
+                                     rangeselector = list(
+                                       buttons = list(
+                                         list(
+                                           count = 2,
+                                           label = "2 days",
+                                           step = "day",
+                                           stepmode = "backward"),
+                                         list(
+                                           count = 7,
+                                           label = "1 week",
+                                           step = "day",
+                                           stepmode = "backward"),
+                                         list(
+                                           count = 1,
+                                           label = "1 month",
+                                           step = "month",
+                                           stepmode = "backward"),
+                                         list(step = "all")))
+                                     
+                                     ,
+                                     range = c(
+                                       {
+                                         dt = max(speed_df$test_date_cst)
+                                         lubridate::day(dt) = lubridate::day(dt) - 2
+                                         dt
+                                       }
+                                       , max(speed_df$test_date_cst)
+                                     )
+                                     ),
+                        yaxis = list (title = "Mbps"))
+  
   
   output$ts_plot <- renderPlotly(p)
   

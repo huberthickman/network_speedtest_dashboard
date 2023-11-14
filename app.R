@@ -86,20 +86,9 @@ server <- function(input, output, session) {
   output$min_download_text <- renderText( {paste("Minimum logged download speed:", min_download, 'Mbps')}) 
   output$min_upload_text <- renderText( {paste("Minimum logged upload speed:", min_upload, 'Mbps')}) 
   
-  #print(speed_df)
-  
   display_df <- speed_df[, c("test_date_cst", "server.name", "converted_download", "converted_upload", "share.url")]
   display_df$result_url <- paste('<a href=', display_df$share.url, ' target=\"_blank\">',  display_df$share.url, '</a>'
                                  , sep='')
-  download_df <- speed_df[, c("test_date_cst", "converted_download")]
-  download_df$type <- "Download"
-  colnames(download_df) <- c("test_date_cst", "speed", "type")
-  
-  upload_df <- speed_df[, c("test_date_cst", "converted_upload")]
-  upload_df$type <- "Upload"
-  colnames(upload_df) <- c("test_date_cst", "speed", "type")
-  
-  plot_df <- union(download_df, upload_df)
   
   output$speed_dt <- DT::renderDT({datatable(
     display_df,

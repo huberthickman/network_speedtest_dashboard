@@ -48,6 +48,8 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  
+  options(download.file.extras='internal')
   #
   #the fileshare name is in the config default profile
   #
@@ -65,7 +67,7 @@ server <- function(input, output, session) {
       tempfile(pattern = "speedtestcsvdata",
                tmpdir = tempdir(),
                fileext = ".csv")
-    # print(tf)
+    print(tf)
     download.file(
       config$fileshare,
       tf,
@@ -207,11 +209,11 @@ server <- function(input, output, session) {
   })  # end with progress
   output$download_button <- shiny::downloadHandler(
     filename = paste0("speed_test_data-", Sys.Date(), ".csv"),
-    content = function(file_path)
-    {
-      write.csv(display_df[-c(6)], file_path, row.names = FALSE)
-    }
-  )
+   content = function(file_path)
+   {
+     write.csv(display_df[-c(6)], file_path, row.names = FALSE)
+   }
+ )
 }
 
 # Run the application

@@ -1,0 +1,4 @@
+default:
+    # Note fileshare can be a URL to a file as well as local file.
+    #fileshare: "https:www.someserver.com/somefile.csv"
+    fileshare: "./speedtest_results.csv"

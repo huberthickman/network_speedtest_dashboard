@@ -108,6 +108,7 @@ server <- function(input, output, session) {
   
   speed_df$days_from_max <- as.double(difftime(max_date, speed_df$date, units = c("days")))
   myVals$max_days_offset <- 0
+  myVals$absolute_max_days <- max(speed_df$days_from_max)
 
   observe({
     myVals$speed_df_filtered <- speed_df[speed_df$days_from_max >= myVals$max_days_offset & speed_df$days_from_max<= myVals$max_days_offset+30,]
@@ -235,6 +236,18 @@ server <- function(input, output, session) {
      write.csv(myVals$display_df[-c(6)], file_path, row.names = FALSE)
    }
  )
+  
+  
+  observeEvent(input$go_back, {
+    print("go_back button")
+    myVals$max_days_offset <- min(myVals$absolute_max_days, myVals$max_days_offset + 30)
+  })  
+  
+  observeEvent(input$go_forward, {
+    print("go_forward button")
+    myVals$max_days_offset <- max(myVals$max_days_offset - 30,0)
+  })  
+  
 }
 
 # Run the application

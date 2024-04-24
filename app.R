@@ -5,17 +5,17 @@
 
 library(shiny)
 library(DT)
-library(parsedate)
 library(lubridate)
-#library(dplyr)
 library(plotly)
 library(shinytitle)
 library(vroom)
+library(bslib)
 
 
 ui <- fluidPage(
   title = "Network Speed Tests",
   use_shiny_title(),
+  theme = bslib::bs_theme(version = 5),
   titlePanel(h3("Network Speed Tests", align = "center")),
   
   tabsetPanel(
@@ -38,11 +38,11 @@ ui <- fluidPage(
       })),
       br(),
       fluidRow(
-        column(2, offset=1, {
+        column(3, offset=1, {
         actionButton("go_back", "Previous 30 days", icon = icon("arrow-left", lib="glyphicon")) 
         })
         ,
-        column(2, offset=1, {
+        column(3, offset=1, {
           actionButton("go_forward", "Next 30 days", icon = icon("arrow-right", lib="glyphicon")) 
         })
      )
@@ -112,6 +112,8 @@ server <- function(input, output, session) {
 
   observe({
     myVals$speed_df_filtered <- speed_df[speed_df$days_from_max >= myVals$max_days_offset & speed_df$days_from_max<= myVals$max_days_offset+30,]
+    myVals$min_date <- min(myVals$speed_df_filtered$date, na.rm = TRUE)
+    myVals$max_date <- max(myVals$speed_df_filtered$date, na.rm = TRUE)
   })
   
   observe({
@@ -185,8 +187,8 @@ server <- function(input, output, session) {
       title = "Upload and Download Speeds",
       xaxis = list(
         title = "Test Date/Time",
+        range = c( myVals$max_date - as.difftime(7, unit="days") , myVals$max_date),
         rangeslider = list(type = "date"),
-
         rangeselector = list(buttons = list(
           list(
             count = 2,
@@ -239,12 +241,10 @@ server <- function(input, output, session) {
   
   
   observeEvent(input$go_back, {
-    print("go_back button")
     myVals$max_days_offset <- min(myVals$absolute_max_days, myVals$max_days_offset + 30)
   })  
   
   observeEvent(input$go_forward, {
-    print("go_forward button")
     myVals$max_days_offset <- max(myVals$max_days_offset - 30,0)
   })  
   

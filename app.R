@@ -133,9 +133,9 @@ server <- function(input, output, session) {
     display_df$result_url <-
       paste(
         '<a href=',
-        myVals$speed_df_filtered$share.url,
+        myVals$speed_df_filtered$'share url',
         ' target=\"_blank\">',
-        myVals$speed_df_filtered$share.url,
+        myVals$speed_df_filtered$'share url',
         '</a>'
         ,
         sep = ''

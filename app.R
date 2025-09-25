@@ -27,14 +27,32 @@ ui <- fluidPage(
       plotlyOutput("ts_plot"),
       hr(),
       h6(
-        "All test results were obtained directly connected to the Panoramic modem via ethernet."
+        "All test results were obtained directly connected to a router via a high quality ethernet cable."
       ),
       br(),
       fluidRow(column(6, offset = 1, {
-        textOutput("min_download_text", inline = TRUE)
+        tags$div(
+          textOutput("min_download_text", inline = TRUE),
+          style = "font-size: 12px;"
+        )
       }),
       column(5, offset = 0, {
-        textOutput("min_upload_text", inline = TRUE)
+        tags$div(
+        textOutput("min_upload_text", inline = TRUE),
+        style = "font-size: 12px;"
+        )
+      })),
+      fluidRow(column(6, offset = 1, {
+        tags$div(
+          textOutput("max_download_text", inline = TRUE),
+          style = "font-size: 12px;"
+        )
+      }),
+      column(5, offset = 0, {
+        tags$div(
+          textOutput("max_upload_text", inline = TRUE),
+          style = "font-size: 12px;"
+        )
       })),
       br(),
       fluidRow(
@@ -90,6 +108,8 @@ server <- function(input, output, session) {
   
   min_download <- min(speed_df$converted_download,  na.rm = TRUE)
   min_upload <- min(speed_df$converted_upload, na.rm = TRUE)
+  max_download <- max(speed_df$converted_download,  na.rm = TRUE)
+  max_upload <- max(speed_df$converted_upload, na.rm = TRUE)
   min_date <- min(speed_df$date, na.rm = TRUE)
   max_date <- max(speed_df$date, na.rm = TRUE)
   
@@ -100,6 +120,14 @@ server <- function(input, output, session) {
   output$min_upload_text <-
     renderText({
       paste("Minimum logged upload speed:", min_upload, 'Mbps')
+    })
+  output$max_download_text <-
+    renderText({
+      paste("Maximum logged download speed:", max_download, 'Mbps')
+    })
+  output$max_upload_text <-
+    renderText({
+      paste("Maximum logged upload speed:", max_upload, 'Mbps')
     })
   print(paste0("Min date is ", min_date, " max date is ", max_date))
   
@@ -114,6 +142,7 @@ server <- function(input, output, session) {
     myVals$speed_df_filtered <- speed_df[speed_df$days_from_max >= myVals$max_days_offset & speed_df$days_from_max<= myVals$max_days_offset+30,]
     myVals$min_date <- min(myVals$speed_df_filtered$date, na.rm = TRUE)
     myVals$max_date <- max(myVals$speed_df_filtered$date, na.rm = TRUE)
+
   })
   
   observe({
@@ -130,6 +159,8 @@ server <- function(input, output, session) {
         "converted_upload",
         "share url"
       )]
+    display_df$'server name' <- as.factor(display_df$'server name')
+    
     display_df$result_url <-
       paste(
         '<a href=',
@@ -155,6 +186,7 @@ server <- function(input, output, session) {
           "Results URL"
         ),
         escape = FALSE,
+        filter = 'top',
         options = list(columnDefs = list(# Initially hidden columns
           list(
             visible = FALSE,
